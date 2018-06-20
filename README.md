@@ -22,6 +22,20 @@ units.
 
 ### nginx.conf
 
+Make sure to redirect traffic going to `http` to your web-accessible GCS bucket:
+```
+location /.well-known {
+        auth_basic off;
+        allow all; # Allow all to see content
+        proxy_pass https://storage.googleapis.com/your-public-gcs-bucket/certs/.well-known;
+}
+```
+
+It makes most sense to have separate nginx containers for port 80 and 443. This
+way your port 80 nginx can still respond to requests (e.g. from letsencrypt)
+while the 443 container might have problems with the certificates and hence
+fails to start entirely.
+
 Make sure to mount `-v /home/services/certs:/etc/nginx/certs:ro` on your nginx
 container. Then you can use the following blob in your nginx.conf:
 
