@@ -1,0 +1,10 @@
+[Unit]
+Description=Run cert-renewer every 48 hours from boot
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=2d
+Persistent=true
+
+[Install]
+WantedBy=timers.target

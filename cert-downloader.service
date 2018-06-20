@@ -1,0 +1,20 @@
+[Unit]
+Description=Run cert-downloader
+Wants=gcr-online.target
+After=gcr-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+Environment=HOME=/home/services
+ExecStartPre=/usr/bin/docker-credential-gcr configure-docker
+ExecStart=/usr/bin/docker run \
+    --name=cert-downloader \
+    --tmpfs /root \
+    --tmpfs /tmp \
+    --rm \
+    -v /home/services/certs:/etc/letsencrypt:rw \
+    -e GCS_PUBLIC_BUCKET=your-public-gcs-bucket \
+    -e GCS_PRIVATE_BUCKET=your-private-gcs-bucket \
+    -e DOMAIN=your-letsencrypt-domain \
+    "deviavir/certbot-gcs" download

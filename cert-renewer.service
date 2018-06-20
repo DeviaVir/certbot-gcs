@@ -1,0 +1,20 @@
+[Unit]
+Description=Run cert-renewer
+Wants=gcr-online.target
+After=gcr-online.target
+
+[Service]
+Type=oneshot
+Environment=HOME=/home/services
+ExecStartPre=/usr/bin/docker-credential-gcr configure-docker
+ExecStart=/usr/bin/docker run \
+    --name=cert-renewer \
+    --tmpfs /root \
+    --tmpfs /tmp \
+    --rm \
+    -v /home/services/certs:/etc/letsencrypt:rw \
+    -e GCS_PUBLIC_BUCKET=your-public-gcs-bucket \
+    -e GCS_PRIVATE_BUCKET=your-private-gcs-bucket \
+    -e DOMAIN=your-letsencrypt-domain \
+    -e EMAIL=your-letsencrypt-email \
+    "deviavir/certbot-gcs" renew
